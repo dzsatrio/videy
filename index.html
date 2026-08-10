@@ -24,27 +24,13 @@
             width: 360px;
             box-sizing: border-box;
         }
-        .success-icon {
-            font-size: 36px;
-            color: #28a745;
-            display: none;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .status-text {
-            font-size: 18px;
-            font-weight: 600;
-            color: #28a745;
-            margin-bottom: 20px;
-            display: none;
-        }
         /* Slider Container */
         .slider-container {
             position: relative;
             width: 100%;
-            height: 50px;
+            height: 54px;
             background-color: #e4e6eb;
-            border-radius: 25px;
+            border-radius: 27px;
             margin-bottom: 20px;
             overflow: hidden;
             display: flex;
@@ -58,8 +44,8 @@
             height: 100%;
             width: 0%;
             background-color: #2b70ed;
-            border-radius: 25px;
-            transition: width 0.1s ease;
+            border-radius: 27px;
+            transition: width 0.05s ease;
         }
         .slider-text {
             position: relative;
@@ -73,8 +59,8 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 50px;
-            height: 50px;
+            width: 54px;
+            height: 54px;
             background-color: #2b70ed;
             border-radius: 50%;
             cursor: pointer;
@@ -82,20 +68,20 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             z-index: 2;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transition: background-color 0.2s;
         }
-        .slider-btn:hover {
-            background-color: #1d5ad8;
+        .slider-btn.success {
+            background-color: #28a745 !important;
         }
         /* Tombol Lanjutkan */
         .btn-submit {
             width: 100%;
             padding: 14px;
             border: none;
-            border-radius: 25px;
+            border-radius: 27px;
             font-size: 16px;
             font-weight: 600;
             background-color: #ccd0d5;
@@ -121,9 +107,6 @@
 </head>
 <body>
     <div class="card">
-        <div id="successIcon" class="success-icon">&#10003;</div>
-        <div id="successText" class="status-text">Verification successful!</div>
-
         <!-- Slider Geser -->
         <div class="slider-container" id="sliderContainer">
             <div class="slider-track" id="sliderTrack"></div>
@@ -145,12 +128,11 @@
         const sliderTrack = document.getElementById('sliderTrack');
         const sliderText = document.getElementById('sliderText');
         const submitBtn = document.getElementById('submitBtn');
-        const successIcon = document.getElementById('successIcon');
-        const successText = document.getElementById('successText');
 
-        let isDragging = false;
+        let isenskap = false;
         let startX = 0;
         let maxTranslate = 0;
+        let isVerified = false;
 
         function initSlider() {
             maxTranslate = sliderContainer.offsetWidth - sliderBtn.offsetWidth;
@@ -159,7 +141,7 @@
         window.addEventListener('resize', initSlider);
         initSlider();
 
-        // Mouse & Touch Events untuk Geser
+        // Event Mouse & Touch
         sliderBtn.addEventListener('mousedown', startDrag);
         window.addEventListener('mousemove', onDrag);
         window.addEventListener('mouseup', stopDrag);
@@ -169,14 +151,14 @@
         window.addEventListener('touchend', stopDrag);
 
         function startDrag(e) {
-            if (submitBtn.classList.contains('active')) return;
-            isDragging = true;
+            if (isVerified) return;
+            isenskap = true;
             startX = (e.type === 'touchstart') ? e.touches[0].clientX : e.clientX;
             e.preventDefault();
         }
 
         function onDrag(e) {
-            if (!isDragging) return;
+            if (!isenskap || isVerified) return;
             let currentX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
             let diffX = currentX - startX;
 
@@ -186,36 +168,37 @@
             sliderBtn.style.transform = `translateX(${diffX}px)`;
             sliderTrack.style.width = (diffX + sliderBtn.offsetWidth) + 'px';
 
-            // Jika digeser sampai ujung (> 90%)
             if (diffX >= maxTranslate * 0.95) {
                 successVerification();
             }
         }
 
         function stopDrag() {
-            if (!isDragging) return;
-            isDragging = false;
+            if (!isenskap || isVerified) return;
+            isenskap = false;
             let currentTransform = sliderBtn.style.transform;
             let currentX = currentTransform ? parseInt(currentTransform.replace('translateX(', '').replace('px)', '')) : 0;
 
             if (currentX < maxTranslate * 0.95) {
-                // Reset kembali ke kiri jika belum sampai ujung
                 sliderBtn.style.transform = 'translateX(0px)';
                 sliderTrack.style.width = '0px';
             }
         }
 
         function successVerification() {
-            isDragging = false;
+            isVerified = true;
+            isenskap = false;
+            
+            // Posisikan mentok di kanan dan kunci
             sliderBtn.style.transform = `translateX(${maxTranslate}px)`;
             sliderTrack.style.width = '100%';
+            
+            // Ubah teks & ikon tombol geser jadi centang hijau
             sliderText.style.display = 'none';
-            sliderBtn.style.display = 'none';
-            sliderContainer.style.display = 'none';
-
-            // Tampilkan centang hijau & aktifkan tombol
-            successIcon.style.display = 'block';
-            successText.style.display = 'block';
+            sliderBtn.innerHTML = '&#10003;';
+            sliderBtn.classList.add('success');
+            
+            // Aktifkan tombol Lanjutkan
             submitBtn.classList.add('active');
             submitBtn.removeAttribute('disabled');
         }
