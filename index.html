@@ -30,9 +30,8 @@
             margin-bottom: 15px;
         }
         .success-icon-top {
-            font-size: 32px;
-            color: #28a745;
-            line-height: 1;
+            display: flex;
+            justify-content: center;
             margin-bottom: 5px;
         }
         .success-text {
@@ -91,8 +90,6 @@
         }
         .slider-btn.success {
             background-color: #28a745 !important;
-            font-size: 22px;
-            font-weight: bold;
         }
         /* Tombol Lanjutkan */
         .btn-submit {
@@ -127,7 +124,11 @@
     <div class="card">
         <!-- Notifikasi Sukses -->
         <div id="successContainer" class="success-container">
-            <div class="success-icon-top">&#10003;</div>
+            <div class="success-icon-top">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
             <p class="success-text">Verification successful!</p>
         </div>
 
@@ -227,11 +228,15 @@
             // Sembunyikan teks panduan geser
             sliderText.style.display = 'none';
             
-            // Ubah ikon tombol jadi centang formal (✓) dan warna hijau
-            sliderBtn.innerHTML = '&#10003;';
+            // Ubah ikon tombol jadi centang SVG tebal & tegas
+            sliderBtn.innerHTML = `
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            `;
             sliderBtn.classList.add('success');
             
-            // Tampilkan teks "Verification successful!" di atas
+            // Tampilkan teks & ikon "Verification successful!" di atas
             successContainer.style.display = 'block';
             
             // Aktifkan tombol Lanjutkan
