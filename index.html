@@ -7,210 +7,224 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            user-select: none;
         }
         .card {
             background: white;
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 35px 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             text-align: center;
             width: 360px;
             box-sizing: border-box;
         }
-        /* Tampilan Fase 1: Loading */
-        #loading-section {
-            display: block;
+        .success-icon {
+            font-size: 36px;
+            color: #28a745;
+            display: none;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        .loading-container {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px auto;
-        }
-        .loading-circle-bg {
-            fill: none;
-            stroke: #e9ecef;
-            stroke-width: 8;
-        }
-        .loading-circle-progress {
-            fill: none;
-            stroke: #007bff;
-            stroke-width: 8;
-            stroke-linecap: round;
-            stroke-dasharray: 351;
-            stroke-dashoffset: 351;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-            transition: stroke-dashoffset 0.1s linear;
-        }
-        .loading-text-percent {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 28px;
-            font-weight: 700;
-            color: #007bff;
-            margin: 0;
-        }
-        /* Tampilan Fase 2: Kotak Centang (Awalnya disembunyikan) */
-        #captcha-section {
+        .status-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #28a745;
+            margin-bottom: 20px;
             display: none;
         }
-        h3 {
-            margin: 0 0 15px 0;
-            color: #1a1a1a;
-            font-size: 20px;
-            font-weight: 700;
-        }
-        p {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
-        .checkbox-container {
+        /* Slider Container */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 50px;
+            background-color: #e4e6eb;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            overflow: hidden;
             display: flex;
             align-items: center;
-            background: #fdfdfd;
-            border: 1px solid #dcdcdc;
-            padding: 14px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            text-align: left;
-            transition: border-color 0.2s;
+            justify-content: center;
         }
-        .checkbox-container:hover {
-            border-color: #b0b0b0;
+        .slider-track {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background-color: #2b70ed;
+            border-radius: 25px;
+            transition: width 0.1s ease;
         }
-        .checkbox-container input {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            cursor: pointer;
-            accent-color: #0056b3;
-        }
-        .checkbox-label {
-            font-size: 15px;
-            color: #333;
+        .slider-text {
+            position: relative;
+            color: #65676b;
+            font-size: 14px;
             font-weight: 500;
-            cursor: pointer;
-            user-select: none;
+            z-index: 1;
+            pointer-events: none;
         }
+        .slider-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 50px;
+            height: 50px;
+            background-color: #2b70ed;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s;
+        }
+        .slider-btn:hover {
+            background-color: #1d5ad8;
+        }
+        /* Tombol Lanjutkan */
         .btn-submit {
             width: 100%;
             padding: 14px;
             border: none;
-            border-radius: 12px;
+            border-radius: 25px;
             font-size: 16px;
             font-weight: 600;
+            background-color: #ccd0d5;
+            color: #8d949e;
             cursor: not-allowed;
-            background-color: #e4e6eb;
-            color: #9aa0a6;
             transition: background-color 0.3s, color 0.3s;
         }
         .btn-submit.active {
-            background-color: #2b6cb0;
+            background-color: #2b70ed;
             color: white;
             cursor: pointer;
         }
         .btn-submit.active:hover {
-            background-color: #2c5282;
+            background-color: #1d5ad8;
         }
-        .footer-text {
-            margin-top: 20px;
-            font-size: 11px;
-            color: #9aa0a6;
+        .footer-desc {
+            font-size: 13px;
+            color: #65676b;
+            margin-top: 15px;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <!-- FASE 1: Loading 0% - 100% -->
-        <div id="loading-section">
-            <div class="loading-container">
-                <svg width="120" height="120" viewBox="0 0 120 120">
-                    <circle class="loading-circle-bg" cx="60" cy="60" r="56" />
-                    <circle class="loading-circle-progress" id="progress-circle" cx="60" cy="60" r="56" />
-                </svg>
-                <p class="loading-text-percent" id="percent-text">0%</p>
-            </div>
-            <h3 id="loading-title">Memeriksa Keamanan</h3>
-            <p id="loading-detail" style="color: #6c757d; font-size: 14px;">Memverifikasi keamanan... (3 detik)</p>
+        <div id="successIcon" class="success-icon">&#10003;</div>
+        <div id="successText" class="status-text">Verification successful!</div>
+
+        <!-- Slider Geser -->
+        <div class="slider-container" id="sliderContainer">
+            <div class="slider-track" id="sliderTrack"></div>
+            <span class="slider-text" id="sliderText">Geser untuk verifikasi</span>
+            <div class="slider-btn" id="sliderBtn">&#8594;</div>
         </div>
-        <!-- FASE 2: Kotak Centang "Saya bukan bot" -->
-        <div id="captcha-section">
-            <h3>Verifikasi Diperlukan</h3>
-            <p>Untuk melanjutkan ke web, centang kotak berikut untuk memastikan kamu manusia, bukan bot.</p>
-            <div class="checkbox-container" onclick="document.getElementById('botCheck').click()">
-                <input type="checkbox" id="botCheck" onclick="event.stopPropagation(); toggleButton()">
-                <label for="botCheck" class="checkbox-label"
-onclick="event.preventDefault()">Saya bukan bot</label>
-            </div>
-            <button id="submitBtn" class="btn-submit" disabled onclick="lanjutkanHalaman()">Lanjutkan</button>
-            <div class="footer-text">
-                Sistem ini digunakan untuk melindungi dari aktivitas otomatis.
-            </div>
+
+        <!-- Tombol Lanjutkan -->
+        <button id="submitBtn" class="btn-submit" disabled onclick="lanjutkanWeb()">Lanjutkan &rarr;</button>
+        
+        <div class="footer-desc">
+            Langkah ini diperlukan untuk mencegah akses otomatis
         </div>
     </div>
+
     <script>
-        // Logika Fase 1: Loading 0% - 100% selama 3 detik
-        let persen = 0;
-        const textElement = document.getElementById('percent-text');
-        const circleElement = document.getElementById('progress-circle');
-        const loadingDetail = document.getElementById('loading-detail');
-        const kelilingLingkaran = 351;
-        const totalWaktuMs = 3000; // 3 detik
-        const totalLangkah = 100;
-        const intervalWaktu = totalWaktuMs / totalLangkah;
-        function updateLoading() {
-            persen++;
-            if (persen > 100) persen = 100;
-            textElement.innerText = persen + '%';
-            const offset = kelilingLingkaran * (1 - persen /
-100);
-            circleElement.style.strokeDashoffset = offset;
-            let sisaDetik = Math.ceil((totalWaktuMs - (persen * intervalWaktu)) / 1000);
-            if (sisaDetik < 0) sisaDetik = 0;
-            loadingDetail.innerText = `Memverifikasi keamanan... (${sisaDetik} detik)`;
-            if (persen < 100) {
-                setTimeout(updateLoading, intervalWaktu);
-            } else {
-                // Setelah 100% selesai, sembunyikan loading
-dan tampilkan fase centang bot
-                setTimeout(function() {
-                    document.getElementById('loading-section').style.display = 'none';
-                    document.getElementById('captcha-section').style.display = 'block';
-                }, 400);
+        const sliderBtn = document.getElementById('sliderBtn');
+        const sliderContainer = document.getElementById('sliderContainer');
+        const sliderTrack = document.getElementById('sliderTrack');
+        const sliderText = document.getElementById('sliderText');
+        const submitBtn = document.getElementById('submitBtn');
+        const successIcon = document.getElementById('successIcon');
+        const successText = document.getElementById('successText');
+
+        let isDragging = false;
+        let startX = 0;
+        let maxTranslate = 0;
+
+        function initSlider() {
+            maxTranslate = sliderContainer.offsetWidth - sliderBtn.offsetWidth;
+        }
+
+        window.addEventListener('resize', initSlider);
+        initSlider();
+
+        // Mouse & Touch Events untuk Geser
+        sliderBtn.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', onDrag);
+        window.addEventListener('mouseup', stopDrag);
+
+        sliderBtn.addEventListener('touchstart', startDrag);
+        window.addEventListener('touchmove', onDrag);
+        window.addEventListener('touchend', stopDrag);
+
+        function startDrag(e) {
+            if (submitBtn.classList.contains('active')) return;
+            isDragging = true;
+            startX = (e.type === 'touchstart') ? e.touches[0].clientX : e.clientX;
+            e.preventDefault();
+        }
+
+        function onDrag(e) {
+            if (!isDragging) return;
+            let currentX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
+            let diffX = currentX - startX;
+
+            if (diffX < 0) diffX = 0;
+            if (diffX > maxTranslate) diffX = maxTranslate;
+
+            sliderBtn.style.transform = `translateX(${diffX}px)`;
+            sliderTrack.style.width = (diffX + sliderBtn.offsetWidth) + 'px';
+
+            // Jika digeser sampai ujung (> 90%)
+            if (diffX >= maxTranslate * 0.95) {
+                successVerification();
             }
         }
-        // Logika Fase 2: Tombol Centang & Lanjutkan
-        function toggleButton() {
-            const checkbox = document.getElementById('botCheck');
-            const btn = document.getElementById('submitBtn');
-            if (checkbox.checked) {
-                btn.classList.add('active');
-                btn.removeAttribute('disabled');
-            } else {
-                btn.classList.remove('active');
-                btn.setAttribute('disabled', 'true');
+
+        function stopDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            let currentTransform = sliderBtn.style.transform;
+            let currentX = currentTransform ? parseInt(currentTransform.replace('translateX(', '').replace('px)', '')) : 0;
+
+            if (currentX < maxTranslate * 0.95) {
+                // Reset kembali ke kiri jika belum sampai ujung
+                sliderBtn.style.transform = 'translateX(0px)';
+                sliderTrack.style.width = '0px';
             }
         }
-        function lanjutkanHalaman() {
-            const checkbox = document.getElementById('botCheck');
-            if (checkbox.checked) {
+
+        function successVerification() {
+            isDragging = false;
+            sliderBtn.style.transform = `translateX(${maxTranslate}px)`;
+            sliderTrack.style.width = '100%';
+            sliderText.style.display = 'none';
+            sliderBtn.style.display = 'none';
+            sliderContainer.style.display = 'none';
+
+            // Tampilkan centang hijau & aktifkan tombol
+            successIcon.style.display = 'block';
+            successText.style.display = 'block';
+            submitBtn.classList.add('active');
+            submitBtn.removeAttribute('disabled');
+        }
+
+        function lanjutkanWeb() {
+            if (submitBtn.classList.contains('active')) {
                 window.location.href = 'main.html';
             }
         }
-        // Jalankan loading saat halaman pertama kali dibuka
-        window.onload = updateLoading;
     </script>
 </body>
 </html>
